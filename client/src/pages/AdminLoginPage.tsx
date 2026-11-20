@@ -7,8 +7,8 @@ export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { adminLogin, isAdminAuthenticated } = useAuthContext();
 
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('AdminPassword123!');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -66,13 +66,13 @@ export const AdminLoginPage: React.FC = () => {
 
           <div>
             <label className="block text-xs font-bold text-gray-700 mb-1">
-              Admin Username / Email
+              Admin Email
             </label>
             <div className="relative">
               <User className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
               <input
                 type="text"
-                placeholder="admin or admin@pradeepvegetables.com"
+                placeholder="Enter your private admin email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -113,14 +113,6 @@ export const AdminLoginPage: React.FC = () => {
                 </>
               )}
             </button>
-          </div>
-
-          <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-100 text-[11px] text-emerald-900">
-            <span className="font-bold">Default Demo Admin Credentials:</span>
-            <div className="mt-1 flex justify-between text-gray-700">
-              <span>Username: <strong>admin</strong></span>
-              <span>Password: <strong>AdminPassword123!</strong></span>
-            </div>
           </div>
         </form>
       </div>

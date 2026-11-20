@@ -606,23 +606,7 @@ export const seedDatabase = async () => {
     await Coupon.deleteMany({});
     await Coupon.insertMany(initialCoupons);
 
-    // 5. Seed Admin User
-    console.log('[Seed] Ensuring default admin exists...');
-    const existingAdmin = await Admin.findOne({ username: 'admin' });
-    if (!existingAdmin) {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash('AdminPassword123!', salt);
-      await Admin.create({
-        username: 'admin',
-        name: 'Pradeep - Store Manager',
-        mobile: '9704532104',
-        email: 'admin@pradeepvegetables.com',
-        password: hashedPassword,
-        role: 'superadmin',
-        isActive: true
-      });
-      console.log('[Seed] Default admin created: admin / AdminPassword123!');
-    }
+    // 5. Admin accounts are created only by the backend setupAdmin script.
 
     console.log('[Seed] Database seeded successfully!');
     process.exit(0);

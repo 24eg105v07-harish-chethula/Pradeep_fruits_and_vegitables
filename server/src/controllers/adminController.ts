@@ -11,63 +11,37 @@ const isDBConnected = () => mongoose.connection.readyState === 1;
 // Get Admin Dashboard Overview Metrics
 export const getAdminStats = async (_req: Request, res: Response) => {
   try {
-    if (isDBConnected()) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const [
-        totalOrders,
-        todayOrders,
-        pendingOrders,
-        completedOrders,
-        cancelledOrders,
-        totalCustomers,
-        lowStockProducts,
-        revenueResult
-      ] = await Promise.all([
-        Order.countDocuments(),
-        Order.countDocuments({ createdAt: { $gte: today } }),
-        Order.countDocuments({ orderStatus: { $in: ['Order Placed', 'Order Confirmed', 'Preparing', 'Packed', 'Out for Delivery'] } }),
-        Order.countDocuments({ orderStatus: 'Delivered' }),
-        Order.countDocuments({ orderStatus: 'Cancelled' }),
-        User.countDocuments({ role: 'customer' }),
-        Product.find({ availableStock: { $lte: 5 }, isActive: true }).select('name unit availableStock images price'),
-        Order.aggregate([
-          { $match: { orderStatus: 'Delivered' } },
-          { $group: { _id: null, totalRevenue: { $sum: '$totalAmount' } } }
-        ])
-      ]);
-
-      const totalRevenue = revenueResult.length ? revenueResult[0].totalRevenue : 0;
-
-      return res.json({
-        success: true,
-        stats: {
-          totalOrders,
-          todayOrders,
-          pendingOrders,
-          completedOrders,
-          cancelledOrders,
-          totalCustomers,
-          totalRevenue,
-          lowStockCount: lowStockProducts.length,
-          lowStockProducts
-        }
-      });
+    if (!isDBConnected()) {
+      return res.status(503).json({ success: false, message: 'Admin statistics are unavailable because MongoDB is not connected.' });
     }
 
-    // In-Memory stats
-    const totalOrders = memoryStore.orders.length;
-    const today = new Date().toISOString().slice(0, 10);
-    const todayOrders = memoryStore.orders.filter(o => o.createdAt && o.createdAt.startsWith(today)).length;
-    const pendingOrders = memoryStore.orders.filter(o => ['Order Placed', 'Order Confirmed', 'Preparing', 'Packed', 'Out for Delivery'].includes(o.orderStatus)).length;
-    const completedOrders = memoryStore.orders.filter(o => o.orderStatus === 'Delivered').length;
-    const cancelledOrders = memoryStore.orders.filter(o => o.orderStatus === 'Cancelled').length;
-    const totalCustomers = memoryStore.users.length + 15; // Realistic active customer base
-    const totalRevenue = memoryStore.orders
-      .filter(o => o.orderStatus === 'Delivered' || o.paymentStatus === 'Paid')
-      .reduce((acc, curr) => acc + curr.totalAmount, 0);
-    const lowStockProducts = memoryStore.products.filter(p => p.availableStock <= 5 && p.isActive !== false);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [
+      totalOrders,
+      todayOrders,
+      pendingOrders,
+      completedOrders,
+      cancelledOrders,
+      totalCustomers,
+      lowStockProducts,
+      revenueResult
+    ] = await Promise.all([
+      Order.countDocuments(),
+      Order.countDocuments({ createdAt: { $gte: today } }),
+      Order.countDocuments({ orderStatus: { $in: ['Order Placed', 'Order Confirmed', 'Preparing', 'Packed', 'Out for Delivery'] } }),
+      Order.countDocuments({ orderStatus: 'Delivered' }),
+      Order.countDocuments({ orderStatus: 'Cancelled' }),
+      User.countDocuments({ role: 'customer' }),
+      Product.find({ availableStock: { $lte: 5 }, isActive: true }).select('name unit availableStock images price'),
+      Order.aggregate([
+        { $match: { orderStatus: 'Delivered' } },
+        { $group: { _id: null, totalRevenue: { $sum: '$totalAmount' } } }
+      ])
+    ]);
+
+    const totalRevenue = revenueResult.length ? revenueResult[0].totalRevenue : 0;
 
     return res.json({
       success: true,
@@ -133,37 +107,8 @@ export const getAllOrders = async (req: Request, res: Response) => {
       });
     }
 
-    // In-memory orders
-    let list = [...memoryStore.orders];
-
-    if (status && status !== 'all') {
-      list = list.filter(o => o.orderStatus === status);
-    }
-
-    if (search) {
-      const q = String(search).toLowerCase();
-      list = list.filter(o =>
-        o.orderId.toLowerCase().includes(q) ||
-        o.customerName.toLowerCase().includes(q) ||
-        o.customerPhone.includes(q) ||
-        (o.deliveryAddress && o.deliveryAddress.area.toLowerCase().includes(q))
-      );
-    }
-
-    if (date) {
-      const dateStr = String(date);
-      list = list.filter(o => o.createdAt && o.createdAt.startsWith(dateStr));
-    }
-
-    list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-    return res.json({
-      success: true,
-      total: list.length,
-      page: Number(page),
-      pages: 1,
-      orders: list
-    });
+    // MongoDB is the only order source of truth. Do not return memory-only or demo orders.
+    return res.status(503).json({ success: false, message: 'Orders are unavailable because MongoDB is not connected.' });
   } catch (error: any) {
     return res.status(500).json({ success: false, message: error.message });
   }

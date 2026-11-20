@@ -65,6 +65,8 @@ export const registerCustomer = async (req: Request, res: Response) => {
       });
     }
 
+    return res.status(503).json({ success: false, message: 'Registration is unavailable because MongoDB is not connected.' });
+
     // In-Memory registration
     const existing = memoryStore.users.find(u => u.mobile === cleanMobile);
     if (existing) {
@@ -153,62 +155,7 @@ export const loginCustomer = async (req: Request, res: Response) => {
       });
     }
 
-    // In-memory customer login
-    let user = memoryStore.users.find(u => u.mobile === cleanMobile);
-    if (!user) {
-      // Auto-create test demo customer if logging in with test credentials
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-      user = {
-        _id: `usr_${Date.now()}`,
-        name: 'Guest Customer',
-        mobile: cleanMobile,
-        password: hashedPassword,
-        role: 'customer',
-        addresses: [
-          {
-            _id: 'addr_1',
-            houseNo: '5-12/A',
-            street: 'Main Road',
-            area: 'Writer Basti',
-            town: 'Kothagudem',
-            district: 'Bhadradri Kothagudem',
-            state: 'Telangana',
-            pincode: '507101',
-            recipientName: 'Customer',
-            customerMobile: cleanMobile,
-            isDefault: true
-          }
-        ],
-        createdAt: new Date().toISOString()
-      };
-      memoryStore.users.push(user);
-    } else {
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(401).json({ success: false, message: 'Invalid mobile number or password.' });
-      }
-    }
-
-    const token = jwt.sign(
-      { id: user._id, role: user.role, mobile: user.mobile },
-      JWT_SECRET,
-      { expiresIn: '30d' }
-    );
-
-    return res.json({
-      success: true,
-      message: 'Logged in successfully!',
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        mobile: user.mobile,
-        email: user.email,
-        role: user.role,
-        addresses: user.addresses
-      }
-    });
+    return res.status(503).json({ success: false, message: 'Login is unavailable because MongoDB is not connected.' });
   } catch (error: any) {
     return res.status(500).json({ success: false, message: error.message || 'Server error during login.' });
   }
@@ -324,82 +271,50 @@ export const deleteAddress = async (req: AuthRequest, res: Response) => {
 // Admin Login
 export const adminLogin = async (req: Request, res: Response) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!username || !password) {
-      return res.status(400).json({ success: false, message: 'Username and password are required.' });
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'Admin email and password are required.' });
     }
 
-    const cleanUsername = username.toLowerCase().trim();
+    if (!isDBConnected()) {
+      return res.status(503).json({ success: false, message: 'Authentication service is temporarily unavailable.' });
+    }
 
-    if (isDBConnected()) {
-      const admin = await Admin.findOne({
-        $or: [
-          { username: cleanUsername },
-          { email: cleanUsername }
-        ]
-      });
+    const cleanEmail = email.toLowerCase().trim();
+    const admin = await Admin.findOne({ email: cleanEmail, isActive: true });
 
-      if (!admin) {
-        return res.status(401).json({ success: false, message: 'Invalid admin credentials.' });
+    if (!admin) {
+      return res.status(401).json({ success: false, message: 'Invalid admin credentials.' });
+    }
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Invalid admin credentials.' });
+    }
+
+    admin.lastLogin = new Date();
+    await admin.save();
+
+    const token = jwt.sign(
+      { id: admin._id, username: admin.username, role: 'superadmin' },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    return res.json({
+      success: true,
+      message: 'Admin authenticated successfully.',
+      token,
+      admin: {
+        id: admin._id,
+        username: admin.username,
+        name: admin.name,
+        role: 'superadmin',
+        email: admin.email,
+        mobile: admin.mobile
       }
-
-      const isMatch = await bcrypt.compare(password, admin.password);
-      if (!isMatch) {
-        return res.status(401).json({ success: false, message: 'Invalid admin credentials.' });
-      }
-
-      admin.lastLogin = new Date();
-      await admin.save();
-
-      const token = jwt.sign(
-        { id: admin._id, username: admin.username, role: 'admin' },
-        JWT_SECRET,
-        { expiresIn: '7d' }
-      );
-
-      return res.json({
-        success: true,
-        message: 'Admin authenticated successfully.',
-        token,
-        admin: {
-          id: admin._id,
-          username: admin.username,
-          name: admin.name,
-          role: admin.role,
-          email: admin.email,
-          mobile: admin.mobile
-        }
-      });
-    }
-
-    // In-memory admin authentication: Default credentials "admin" / "AdminPassword123!"
-    if (
-      (cleanUsername === 'admin' || cleanUsername === 'admin@pradeepvegetables.com') &&
-      password === 'AdminPassword123!'
-    ) {
-      const token = jwt.sign(
-        { id: 'admin_1', username: 'admin', role: 'admin' },
-        JWT_SECRET,
-        { expiresIn: '7d' }
-      );
-
-      return res.json({
-        success: true,
-        message: 'Admin authenticated successfully.',
-        token,
-        admin: {
-          id: 'admin_1',
-          username: 'admin',
-          name: 'Pradeep - Store Owner',
-          role: 'superadmin',
-          email: 'admin@pradeepvegetables.com',
-          mobile: '9704532104'
-        }
-      });
-    }
-
-    return res.status(401).json({ success: false, message: 'Invalid admin credentials.' });
+    });
   } catch (error: any) {
     return res.status(500).json({ success: false, message: error.message });
   }

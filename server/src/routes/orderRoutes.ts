@@ -6,14 +6,14 @@ import {
   getCustomerOrders,
   cancelOrder
 } from '../controllers/orderController.js';
-import { optionalCustomerToken, verifyCustomerToken } from '../middleware/auth.js';
+import { verifyCustomerToken } from '../middleware/auth.js';
 
 const router = Router();
 
-router.post('/', optionalCustomerToken, createOrder);
+router.post('/', verifyCustomerToken, createOrder);
 router.post('/verify-payment', verifyPayment);
 router.get('/track/:id', trackOrder);
-router.get('/my-orders', optionalCustomerToken, getCustomerOrders);
+router.get('/my-orders', verifyCustomerToken, getCustomerOrders);
 router.post('/cancel/:id', cancelOrder);
 
 export default router;

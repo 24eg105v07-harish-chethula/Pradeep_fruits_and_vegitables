@@ -634,23 +634,5 @@ export const memoryStore: MemoryStore = {
     }
   ],
   users: [],
-  admins: [
-    {
-      _id: 'admin_1',
-      username: 'admin',
-      name: 'Pradeep - Store Owner',
-      mobile: '9704532104',
-      email: 'admin@pradeepvegetables.com',
-      passwordHash: '$2a$10$wOqR70oM9d3G/vjL2k2k6eP0r6G5B9N0B9N0B9N0B9N0B9N0B9N0B', // AdminPassword123!
-      role: 'superadmin',
-      isActive: true
-    }
-  ]
+  admins: []
 };
-
-// Seed admin password hash asynchronously
-bcrypt.hash('AdminPassword123!', 10).then(hash => {
-  if (memoryStore.admins[0]) {
-    memoryStore.admins[0].passwordHash = hash;
-  }
-});

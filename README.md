@@ -153,10 +153,23 @@ Open `http://localhost:5173` in your browser.
 
 ---
 
-## 🔐 Default Admin Credentials
-- **URL:** `http://localhost:5173/admin/login`
-- **Username:** `admin` (or `admin@pradeepvegetables.com`)
-- **Password:** `AdminPassword123!`
+## 🔐 Secure Admin Setup
+
+Configure private values in `server/.env`:
+
+```ini
+ADMIN_EMAIL=your-private-email@example.com
+ADMIN_PASSWORD=your-strong-private-password
+ADMIN_MOBILE=9704532104
+```
+
+Create or update the owner account once:
+
+```bash
+npm --prefix server run setup-admin
+```
+
+Admin login is available at `http://localhost:5173/admin/login`. Public customer registration cannot create admin accounts.
 
 ---
 

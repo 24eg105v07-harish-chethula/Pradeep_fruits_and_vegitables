@@ -22,6 +22,14 @@ const generateOrderNumber = (): string => {
 // Create new order
 export const createOrder = async (req: AuthRequest, res: Response) => {
   try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ success: false, message: 'Order storage is temporarily unavailable. Please try again after database connection is restored.' });
+    }
+
+    if (!req.user || req.user.role === 'admin' || req.user.role === 'superadmin') {
+      return res.status(403).json({ success: false, message: 'A valid customer account is required to place an order.' });
+    }
+
     const {
       customerName,
       customerPhone,

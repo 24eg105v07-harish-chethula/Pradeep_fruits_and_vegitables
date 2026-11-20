@@ -126,7 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const adminLoginAction = async (username: string, password: string) => {
     setIsLoading(true);
     try {
-      const res = await api.post('/auth/admin/login', { username, password });
+      const res = await api.post('/auth/admin/login', { email: username, password });
       if (res.data.success) {
         localStorage.setItem('pfv_admin_token', res.data.token);
         localStorage.setItem('pfv_admin_user', JSON.stringify(res.data.admin));

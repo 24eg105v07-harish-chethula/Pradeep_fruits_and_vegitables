@@ -36,7 +36,7 @@ export const CheckoutPage: React.FC = () => {
     clearCart
   } = useCartContext();
 
-  const { user, isAuthenticated, saveCustomerAddress } = useAuthContext();
+  const { user, isAuthenticated, saveCustomerAddress, openAuthModal } = useAuthContext();
   const { currentArea, validatePincode, serviceAreas } = useLocationContext();
 
   // Address State
@@ -107,6 +107,23 @@ export const CheckoutPage: React.FC = () => {
           className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition-colors"
         >
           Return to Store
+        </button>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <ShieldCheck className="w-16 h-16 text-emerald-600 mx-auto mb-4" />
+        <h2 className="text-xl font-bold text-gray-900">Login required</h2>
+        <p className="text-xs text-gray-500 mt-2 mb-6">Please log in or register before placing an order.</p>
+        <button
+          type="button"
+          onClick={() => openAuthModal('login')}
+          className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold"
+        >
+          Login or Register
         </button>
       </div>
     );
