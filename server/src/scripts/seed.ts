@@ -2,8 +2,11 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import path from 'path';
+import dns from 'node:dns';
 
 dotenv.config({ path: path.join(process.cwd(), '.env') });
+
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 import { Category } from '../models/Category.js';
 import { Product } from '../models/Product.js';

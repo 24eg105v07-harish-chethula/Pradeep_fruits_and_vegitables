@@ -3,8 +3,10 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import path from 'path';
 import { Admin } from '../models/Admin.js';
+import dns from 'node:dns';
 
 dotenv.config({ path: path.join(process.cwd(), '.env') });
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const setupOwnerAdmin = async () => {
   const mongoUri = process.env.MONGO_URI;

@@ -3,8 +3,12 @@ import http from 'http';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import dns from 'node:dns';
 
 dotenv.config();
+
+// Configure DNS to use Google Public DNS
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 import { connectDB } from './config/db.js';
 import { initSocket } from './services/socketService.js';
@@ -67,7 +71,14 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 });
 
 // Start Server immediately and connect to DB asynchronously
-const startServer = () => {
+const startServer = async () => {
+  const dbConnected = await connectDB();
+  if (!dbConnected) {
+    console.error('[Startup] Backend stopped: MongoDB connection is required.');
+    process.exitCode = 1;
+    return;
+  }
+
   server.listen(PORT, () => {
     console.log(`=======================================================`);
     console.log(`🥑 PRADEEP FRUITS AND VEGETABLES - Backend Active`);
@@ -76,9 +87,6 @@ const startServer = () => {
     console.log(`⚡ Target Delivery: 30 Minutes | Currency: INR (₹)`);
     console.log(`=======================================================`);
   });
-
-  // Attempt MongoDB connection in background
-  connectDB();
 };
 
 startServer();
