@@ -394,7 +394,7 @@ export const adminLogin = async (req: Request, res: Response) => {
           name: 'Pradeep - Store Owner',
           role: 'superadmin',
           email: 'admin@pradeepvegetables.com',
-          mobile: '9876543210'
+          mobile: '9704532104'
         }
       });
     }

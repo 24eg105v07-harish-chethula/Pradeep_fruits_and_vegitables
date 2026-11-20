@@ -368,11 +368,11 @@ export const OrderTrackingPage: React.FC = () => {
             <div className="p-4 rounded-2xl bg-emerald-900 text-white flex items-center justify-between">
               <div>
                 <p className="text-[11px] text-emerald-300 font-bold uppercase">Store Helpline</p>
-                <p className="text-sm font-extrabold">+91 98765 43210</p>
+                <p className="text-sm font-extrabold">+91 97045 32104</p>
                 <p className="text-[10px] text-emerald-200">Pradeep Fruits & Veg Store, Kothagudem</p>
               </div>
               <a
-                href="tel:9876543210"
+                href="tel:+919704532104"
                 className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition-colors shadow"
               >
                 Call Store

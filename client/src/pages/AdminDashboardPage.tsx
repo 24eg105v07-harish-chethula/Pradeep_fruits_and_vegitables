@@ -117,7 +117,13 @@ export const AdminDashboardPage: React.FC = () => {
       fetchAllAdminData();
     });
 
+    // Poll as a reliable fallback in case WebSocket delivery is unavailable
+    const orderRefreshInterval = window.setInterval(() => {
+      fetchAllAdminData();
+    }, 10000);
+
     return () => {
+      window.clearInterval(orderRefreshInterval);
       socket.off('new_order');
       socket.off('order_updated');
     };

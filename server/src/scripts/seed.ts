@@ -615,7 +615,7 @@ export const seedDatabase = async () => {
       await Admin.create({
         username: 'admin',
         name: 'Pradeep - Store Manager',
-        mobile: '9876543210',
+        mobile: '9704532104',
         email: 'admin@pradeepvegetables.com',
         password: hashedPassword,
         role: 'superadmin',

@@ -54,7 +54,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ order, onClose }) =>
                 Main Market Road, Bhadradri Kothagudem, Telangana, India - 507101
               </p>
               <p className="text-xs text-gray-500">
-                Phone: +91 98765 43210 | FSSAI / Retail Trade License: PFV-TS-2026
+                Phone: +91 97045 32104 | FSSAI / Retail Trade License: PFV-TS-2026
               </p>
             </div>
             <div className="text-right">

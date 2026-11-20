@@ -639,7 +639,7 @@ export const memoryStore: MemoryStore = {
       _id: 'admin_1',
       username: 'admin',
       name: 'Pradeep - Store Owner',
-      mobile: '9876543210',
+      mobile: '9704532104',
       email: 'admin@pradeepvegetables.com',
       passwordHash: '$2a$10$wOqR70oM9d3G/vjL2k2k6eP0r6G5B9N0B9N0B9N0B9N0B9N0B9N0B', // AdminPassword123!
       role: 'superadmin',
