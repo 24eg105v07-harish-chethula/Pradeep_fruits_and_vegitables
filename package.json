@@ -1,0 +1,13 @@
+{
+  "name": "pradeep-fruits-and-vegetables-platform",
+  "version": "1.0.0",
+  "description": "Commercial Zepto/Blinkit style grocery delivery platform for PRADEEP FRUITS AND VEGETABLES in Bhadradri Kothagudem",
+  "private": true,
+  "scripts": {
+    "client": "npm --prefix client run dev",
+    "server": "npm --prefix server run dev",
+    "build:client": "npm --prefix client run build",
+    "build:server": "npm --prefix server run build",
+    "seed": "npm --prefix server run seed"
+  }
+}
