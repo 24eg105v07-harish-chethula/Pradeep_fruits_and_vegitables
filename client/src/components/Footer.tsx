@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Clock, ShieldCheck, Heart, Zap } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Heart, Zap } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -78,7 +78,7 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Contact Details & Admin */}
+          {/* Contact Details */}
           <div>
             <h4 className="font-bold text-sm text-emerald-100 uppercase tracking-wider mb-3">
               Store & Support
@@ -101,16 +101,6 @@ export const Footer: React.FC = () => {
                 <span>Open: 6:00 AM – 10:00 PM (Everyday)</span>
               </li>
             </ul>
-
-            <div className="mt-4 pt-3 border-t border-emerald-900/60">
-              <Link
-                to="/admin/dashboard"
-                className="inline-flex items-center gap-1.5 text-xs text-emerald-300 hover:text-white font-bold bg-emerald-900/50 px-3 py-1.5 rounded-lg border border-emerald-700/60 transition-colors"
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Admin Management Portal</span>
-              </Link>
-            </div>
           </div>
         </div>
 

@@ -14,7 +14,7 @@ export const AdminLoginPage: React.FC = () => {
 
   // If already logged in
   if (isAdminAuthenticated) {
-    navigate('/admin/dashboard');
+    navigate('/admin');
   }
 
   const handleAdminSubmit = async (e: React.FormEvent) => {
@@ -25,7 +25,7 @@ export const AdminLoginPage: React.FC = () => {
     try {
       const res = await adminLogin(username.trim(), password);
       if (res.success) {
-        navigate('/admin/dashboard');
+        navigate('/admin');
       } else {
         setError(res.message || 'Invalid admin credentials');
       }

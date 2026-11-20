@@ -132,16 +132,18 @@ export const AdminDashboardPage: React.FC = () => {
   const fetchAllAdminData = async () => {
     try {
       setIsLoading(true);
-      const [statsRes, ordersRes, productsRes, areasRes, couponsRes] = await Promise.all([
+
+      const ordersRes = await api.get('/admin/orders');
+      if (ordersRes.data.success) setOrders(ordersRes.data.orders);
+
+      const [statsRes, productsRes, areasRes, couponsRes] = await Promise.all([
         api.get('/admin/stats'),
-        api.get('/admin/orders'),
         api.get('/products'),
         api.get('/service-areas'),
         api.get('/coupons')
       ]);
 
       if (statsRes.data.success) setStats(statsRes.data.stats);
-      if (ordersRes.data.success) setOrders(ordersRes.data.orders);
       if (productsRes.data.success) setProducts(productsRes.data.products);
       if (areasRes.data.success) setServiceAreas(areasRes.data.areas);
       if (couponsRes.data.success) setCoupons(couponsRes.data.coupons);
@@ -564,14 +566,20 @@ export const AdminDashboardPage: React.FC = () => {
                             <Phone className="w-3 h-3" />
                             <span>+91 {order.customerPhone}</span>
                           </a>
+                          {order.customerEmail && (
+                            <p className="text-gray-600 break-all">Email: {order.customerEmail}</p>
+                          )}
                           <p className="text-gray-600 mt-1">
                             {order.deliveryAddress.houseNo}, {order.deliveryAddress.street}
                           </p>
                           <p className="text-gray-700 font-semibold">
-                            {order.deliveryAddress.area}, {order.deliveryAddress.town || 'Kothagudem'} - {order.deliveryAddress.pincode}
+                            {order.deliveryAddress.area}, {order.deliveryAddress.town || 'Kothagudem'}
                           </p>
-                          {order.deliveryAddress.landmark && (
-                            <p className="text-gray-500 italic">Landmark: {order.deliveryAddress.landmark}</p>
+                          <p className="text-gray-600">
+                            {order.deliveryAddress.district || 'Bhadradri Kothagudem'}, {order.deliveryAddress.state || 'Telangana'} - {order.deliveryAddress.pincode}
+                          </p>
+                          {order.deliveryInstructions && (
+                            <p className="text-gray-600 italic">Instructions: {order.deliveryInstructions}</p>
                           )}
                         </div>
 
@@ -584,11 +592,19 @@ export const AdminDashboardPage: React.FC = () => {
 
                           <div className="max-h-36 overflow-y-auto space-y-1 pr-1">
                             {order.items.map((item, idx) => (
-                              <div key={idx} className="flex justify-between items-center py-0.5 border-b border-gray-100 last:border-0">
-                                <span className="font-medium text-gray-800 truncate max-w-[160px]">
-                                  {item.quantity}x {item.name} ({item.unit})
-                                </span>
-                                <span className="font-bold text-gray-900">₹{item.totalPrice}</span>
+                              <div key={idx} className="flex items-center justify-between gap-2 py-1 border-b border-gray-100 last:border-0">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  {item.image && (
+                                    <img src={item.image} alt={item.name} className="w-8 h-8 object-cover rounded-lg border border-gray-200 shrink-0" />
+                                  )}
+                                  <span className="font-medium text-gray-800 truncate max-w-[145px]">
+                                    {item.name} ({item.unit})
+                                  </span>
+                                </div>
+                                <div className="text-right shrink-0">
+                                  <p className="font-bold text-gray-900">₹{item.price} × {item.quantity}</p>
+                                  <p className="text-[10px] text-gray-500">Subtotal ₹{item.totalPrice}</p>
+                                </div>
                               </div>
                             ))}
                           </div>

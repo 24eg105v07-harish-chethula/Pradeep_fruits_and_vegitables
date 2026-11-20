@@ -45,7 +45,8 @@ export const App: React.FC = () => {
                   <Route path="/track/:orderId" element={<OrderTrackingPage />} />
                   <Route path="/my-orders" element={<MyOrdersPage />} />
                   <Route path="/admin/login" element={<AdminLoginPage />} />
-                  <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+                  <Route path="/admin" element={<AdminDashboardPage />} />
+                  <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>

@@ -144,9 +144,15 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, message: 'Order not found.' });
     }
 
+    const previousStatus = order.orderStatus;
+
     if (status) {
       if (!validStatuses.includes(status as OrderStatus)) {
         return res.status(400).json({ success: false, message: `Invalid status: ${status}` });
+      }
+
+      if (order.orderStatus === status) {
+        return res.json({ success: true, message: `Order #${order.orderId} is already "${status}".`, order });
       }
 
       order.orderStatus = status as OrderStatus;
@@ -163,7 +169,7 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
       }
 
       // If cancelled by admin, restore product stock
-      if (status === 'Cancelled') {
+      if (status === 'Cancelled' && previousStatus !== 'Cancelled') {
         for (const item of order.items) {
           if (isDBConnected()) {
             await Product.findByIdAndUpdate(item.productId, { $inc: { availableStock: item.quantity } });

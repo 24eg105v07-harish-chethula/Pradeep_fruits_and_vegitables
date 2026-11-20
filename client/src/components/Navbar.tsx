@@ -10,7 +10,6 @@ import {
   Sparkles,
   LogOut,
   ShoppingBag,
-  ShieldCheck,
   Menu,
   X
 } from 'lucide-react';
@@ -158,16 +157,6 @@ export const Navbar: React.FC<NavbarProps> = ({ searchQuery, onSearchChange }) =
                 <span>Login</span>
               </button>
             )}
-
-            {/* Admin Portal Shortcut */}
-            <Link
-              to="/admin/dashboard"
-              className="hidden lg:flex items-center gap-1 px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition-colors border border-emerald-200"
-              title="Admin Delivery & Order Dashboard"
-            >
-              <ShieldCheck className="w-4 h-4 text-emerald-700" />
-              <span>Admin</span>
-            </Link>
 
             {/* Shopping Cart Button */}
             <button
